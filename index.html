@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>FisherMatch</title>
+
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+  <script src="js/main.js"></script>
+</head>
+
+<body>
+<div class="container" id="main">
+  <div class="row">
+    <h1 class="col-md-12 text-center">
+      <b>FisherMatch</b>: Semi-Supervised Rotation Regression <br> via Entropy-based Filtering <br>
+    </h1>
+    <venue class="col-md-12 text-center">
+      CVPR2022 (Oral Presentation)
+    </venue>
+
+  </div>
+  <div class="row meta">
+    <div class="col-md-12 text-center">
+      <ul class="list-inline">
+        <li>
+          <a href="https://yd-yin.github.io/">Yingda Yin</a>
+        </li>
+        <li>
+          Yingcheng Cai
+        </li>
+        <li>
+          <a href="https://hughw19.github.io/">He Wang</a><sup>&dagger;</sup>
+        </li>
+        <li>
+          <a href="https://cfcs.pku.edu.cn/baoquan/">Baoquan Chen</a><sup>&dagger;</sup>
+        </li>
+      </ul>
+      <ul style="padding-top: 2px; padding-bottom: 15px">
+        Peking University
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="row meta">
+    <div class="col-md-4 col-md-offset-4 text-center">
+      <ul class="nav nav-pills nav-justified">
+        <li>
+          <a href="https://arxiv.org/abs/2203.15765">
+            <image src="images/fishermatch/pdf.png" height="50px"></image>
+            <br>
+            <strong>ArXiv</strong>
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/yd-yin/FisherMatch">
+            <image src="images/fishermatch/github.png" height="50px"></image>
+            <br>
+            <strong>Code (Coming soon)</strong>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>
+        Introduction
+      </h2>
+      <p class="text-justify">
+        Estimating the 3DoF rotation from a single RGB image is an important yet challenging problem in computer vision, graphics and robotics.
+        Though recent supervised rotation regression works achieve good performance, they rely on a large amount of labeled data, which can be expensive and
+        time-consuming to obtain, thus becomes one of the obstacles to improving rotation regression.
+      </p>
+      <p>
+        To reduce the amount of supervision, semi-supervised learning (SSL) has been a powerful approach, where many progresses have witnessed in classification
+        tasks recently. However, few works address semi-supervised regression, especially semi-supervised rotation regression.
+        Given that rotation space SO(3) is a non-Euclidean manifold, a general regression algorithm needs to be tailored, taking the nonlinear structure of
+        the rotation space into account, which makes semi-supervised rotation regression a more challenging and less studied topic.
+      </p>
+
+      <table style="margin: 20px">
+        <tr>
+          <td>
+            <image src="images/fishermatch/teaser1_1.png" class="img-responsive center-block" style="max-width: 60%;"></image>
+          </td>
+          <td>
+            <image src="images/fishermatch/teaser1_2.png" class="img-responsive center-block" style="max-width: 60%;"></image>
+          </td>
+        </tr>
+      </table>
+
+      <p>
+        In this work, for the first time, we propose a general framework, namely <i>FisherMatch</i>, for semi-supervised rotation regression, without assuming
+        any
+        domain-specific knowledge or paired data.
+        Inspired by the popular semi-supervised approach, <a href="https://arxiv.org/abs/2001.07685">FixMatch</a>, we propose to leverage pseudo label filtering
+        to facilitate the information flow from
+        labeled data to unlabeled data in a teacher-student mutual learning framework.
+        However, incorporating the pseudo label filtering mechanism into semi-supervised rotation regression is highly non-trivial, mainly due to the lack of
+        a reliable confidence measure for rotation prediction.
+      </p>
+      <p>
+        We propose to leverage <i>matrix Fisher</i> distribution to build a probabilistic model of rotation and devise a matrix Fisher-based regressor
+        for jointly predicting rotation along with its prediction uncertainty.
+        We then propose to use the entropy of the predicted distribution as a confidence measure, which enables us to perform pseudo label filtering for
+        rotation regression.
+      </p>
+      <p>
+        Our extensive experiments show that our method can work well even under very low labeled data ratios on different benchmarks, achieving significant
+        and consistent performance improvement over supervised learning and other semi-supervised learning baselines.
+      </p>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>
+        Method
+      </h2>
+      <h3>
+        Probabilistic Modeling of Rotation
+      </h3>
+      <p>
+        <i>Matrix Fisher</i> distribution is a probability distribution over SO(3) for rotation matrices, whose probability density function is in the form of
+      <figure>
+        <image src="images/fishermatch/eq_fisher.png" class="img-responsive center-block" style="max-width: 40%;"></image>
+      </figure>
+      <p>
+        where parameter A is an arbitrary 3×3 matrix and F(A) is the normalizing constant. The mode and dispersion of the distribution can be computed from
+        computing singular value decomposition of the parameter A.
+      </p>
+      <p>
+        Another important probabilistic model for rotation is <i>Bingham</i> distribution for unit quaternions. The probability density function is defined as
+      </p>
+      <figure>
+        <image src="images/fishermatch/eq_bingham.png" class="img-responsive center-block" style="max-width: 40%;"></image>
+      </figure>
+      <p>
+        where M is a 4×4 orthogonal matrix and Z is a 4×4 diagonal matrix. The first column of parameter M indicates the mode and the remaining columns
+        describe the orientation of dispersion while the corresponding entries describe the strength of the dispersion.
+      </p>
+      <h3>
+        Pipeline
+      </h3>
+      <figure>
+        <image src="images/fishermatch/method.png" class="img-responsive center-block" style="max-width: 80%;"></image>
+        <figcaption>Pipeline overview</figcaption>
+      </figure>
+      <p>
+        Our matrix Fisher based-rotation regressor &Phi; takes an RGB image x as input and outputs the parameter A of the predicted matrix Fisher distribution.
+        We leverage a teacher-student mutual learning framework composed of a learnable student model &Phi;<sub>s</sub> and an exponential-moving-average (EMA)
+        teacher model &Phi;<sub>t</sub>. On labeled data, the student network is trained by the ground-truth labels with the supervised loss; while on unlabeled
+        data, the student
+        model takes the pseudo labels from the EMA teacher.
+      </p>
+      <p>
+        Inspired by FixMatch, we only want the accurate predictions from the teacher model to "teach" the student model. Otherwise, noisy pseudo labels may slow
+        down the training procedure, or even do harm to the whole process. For depicting the confidence of a predicted distribution, we propose to use <i>entropy</i>,
+        which is widely used in statistics acting as the degree of disorder or randomness in the system, as a measure of <i>uncertainty</i>. A lower entropy
+        generally
+        indicates a more <i>peaked</i> distribution which exhibits less uncertainty and higher confidence.
+      </p>
+      <p>
+        For pseudo label filtering, we set a fixed entropy threshold &tau; , and only reserve the prediction as a pseudo label if its entropy is lower than the
+        threshold.
+      </p>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>
+        Experiment
+      </h2>
+      <p class="text-justify">
+        On common benchmark datasets of object rotation estimation from RGB images (ModelNet10-SO(3) and Pascal3D+) under various labeled data ratios, our
+        experiment demonstrates a significant and consistent performance improvement over supervised learning and other semi-supervised learning baselines.
+      </p>
+      <figure>
+        <image src="images/fishermatch/tab_modelnet.png" class="img-responsive center-block" style="max-width: 60%;"></image>
+        <figcaption>Comparing our proposed FisherMatch with the baselines on ModelNet10-SO(3) under different ratios of labeled data.</figcaption>
+      </figure>
+      <figure>
+        <image src="images/fishermatch/tab_pascal.png" class="img-responsive center-block" style="max-width: 65%;"></image>
+        <figcaption>Comparing our proposed FisherMatch with the baselines on the 6 categories of Pascal3D+ dataset with few annotations (7, 20, 50 images).
+        </figcaption>
+      </figure>
+      <p>
+        Shown in the curves, as the SSL goes on, the improving model leads to more confident predictions indicated by the increasing pseudo label coverage,
+        while the pseudo label quality still keeps stable, resulting in the steady performance increasing on both unlabeled dataset and test dataset.
+      </p>
+      <figure>
+        <image src="images/fishermatch/process.png" class="img-responsive center-block" style="max-width: 90%;"></image>
+        <figcaption>The visualization of the training process of FisherMatch.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>
+        Citation
+      </h2>
+      <div class="form-group col-md-10 col-md-offset-0">
+        <textarea id="bibtex" class="form-control" readonly>
+@article{yin2022fishermatch,
+  title={FisherMatch: Semi-Supervised Rotation Regression via Entropy-based Filtering},
+  author={Yin, Yingda and Cai, Yingcheng and Wang, He and Chen, Baoquan},
+  journal={CVPR},
+  year={2022}
+}</textarea>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>
+        Contact
+      </h2>
+      <p class="text-justify">
+        Please feel free to contact <a href="https://yd-yin.github.io/">Yingda Yin</a> or <a href="https://hughw19.github.io/">He Wang</a>.
+      </p>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>
+        Acknowledgements
+      </h2>
+      <p class="text-justify">
+        We thank Jiangran Lv from DUT for the fruitful discussions and valuable help in experiments
+        and Yang Wang from PKU for the help in the derivation of maths.</p>
+      <p>
+        The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a>.
+      </p>
+    </div>
+  </div>
+</div>
+<br>
+</body>
+</html>
