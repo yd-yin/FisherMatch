@@ -1,0 +1,26 @@
+exp_name: None
+
+data_dir: 'data'
+dataset: 'modelnet'
+category: 'sofa'
+ss_ratio: 0.05
+
+network: 'mobilenet'
+
+SSL_lambda: 1
+conf_thres: -5.3
+is_ema: True
+ema_decay: 0.999
+type_unsuper: 'ce'
+
+lr: 1e-4
+batch_size: 32
+ulb_batch_ratio: 4
+num_workers: 4
+stage1_iteration: 200000
+max_iteration: 600000
+log_frequency: 100
+val_frequency: 1000
+save_frequency: 10000
+
+gpu: 0

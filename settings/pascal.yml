@@ -1,0 +1,12 @@
+dataset: 'pascal3d'
+category: 'car'
+ss_ratio: 20
+
+network: 'resnet18'
+
+conf_thres: -3.9
+stage1_iteration: 10000
+max_iteration: 20000
+log_frequency: 100
+val_frequency: 100
+save_frequency: 10000
