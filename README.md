@@ -15,7 +15,7 @@ Project page: https://yd-yin.github.io/FisherMatch/
 ## Dataset
 **ModelNet10-SO(3)**
 
-Download ModelNet10-SO(3) dataset [here](https://github.com/leoshine/Spherical_Regression#modelnet10-so3-dataset) and link it to `./data/ModelNet10-SO3`
+Download ModelNet10-SO(3) dataset [here](https://github.com/leoshine/Spherical_Regression#modelnet10-so3-dataset) and link it to `data/ModelNet10-SO3`
 ```bash
 unzip ModelNet10-SO3.zip
 ln -s $PWD/ModelNet10-SO3 $PROJECT_PATH/data/ModelNet10-SO3
@@ -23,7 +23,7 @@ ln -s $PWD/ModelNet10-SO3 $PROJECT_PATH/data/ModelNet10-SO3
 
 **Pascal3D+**
 
-Download Pascal3D+ (release1.1) dataset [here](https://cvgl.stanford.edu/projects/pascal3d.html) and link it to `./data/pascal3d`
+Download Pascal3D+ (release1.1) dataset [here](https://cvgl.stanford.edu/projects/pascal3d.html) and link it to `data/pascal3d`
 ```bash
 unzip PASCAL3D+_release1.1.zip
 ln -s $PWD/PASCAL3D+_release1.1 $PROJECT_PATH/data/pascal3d
@@ -59,10 +59,12 @@ python eval.py CKPT_FILES [--config=settings/EXAMPLE.yml]
 
 # Bibtex
 ```bibtex
-@article{yin2022fishermatch,
-  title={FisherMatch: Semi-Supervised Rotation Regression via Entropy-based Filtering},
+@InProceedings{yin2022fishermatch,
   author={Yin, Yingda and Cai, Yingcheng and Wang, He and Chen, Baoquan},
-  journal={CVPR},
-  year={2022}
+  title={FisherMatch: Semi-Supervised Rotation Regression via Entropy-Based Filtering},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  month={June},
+  year={2022},
+  pages={11164-11173}
 }
 ```

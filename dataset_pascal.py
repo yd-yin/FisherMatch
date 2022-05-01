@@ -190,16 +190,16 @@ def mat_data_to_dict_data(mat_data, folder):
 def compute_rotation_matrix_from_euler(euler):
     batch = euler.shape[0]
 
-    c1 = torch.cos(euler[:, 0]).view(batch, 1)  # batch*1
-    s1 = torch.sin(euler[:, 0]).view(batch, 1)  # batch*1
-    c2 = torch.cos(euler[:, 2]).view(batch, 1)  # batch*1
-    s2 = torch.sin(euler[:, 2]).view(batch, 1)  # batch*1
-    c3 = torch.cos(euler[:, 1]).view(batch, 1)  # batch*1
-    s3 = torch.sin(euler[:, 1]).view(batch, 1)  # batch*1
+    cx = torch.cos(euler[:, 0]).view(batch, 1)  # batch*1
+    sx = torch.sin(euler[:, 0]).view(batch, 1)  # batch*1
+    cy = torch.cos(euler[:, 1]).view(batch, 1)  # batch*1
+    sy = torch.sin(euler[:, 1]).view(batch, 1)  # batch*1
+    cz = torch.cos(euler[:, 2]).view(batch, 1)  # batch*1
+    sz = torch.sin(euler[:, 2]).view(batch, 1)  # batch*1
 
-    row1 = torch.cat((c2 * c3, -s2, c2 * s3), 1).view(-1, 1, 3)  # batch*1*3
-    row2 = torch.cat((c1 * s2 * c3 + s1 * s3, c1 * c2, c1 * s2 * s3 - s1 * c3), 1).view(-1, 1, 3)  # batch*1*3
-    row3 = torch.cat((s1 * s2 * c3 - c1 * s3, s1 * c2, s1 * s2 * s3 + c1 * c3), 1).view(-1, 1, 3)  # batch*1*3
+    row1 = torch.cat((cy * cz, (sx * sy * cz) - (cx * sz), (cx * sy * cz) + (sx * sz)), 1).view(-1, 1, 3)  # batch*1*3
+    row2 = torch.cat((cy * sz, (sx * sy * sz) + (cx * cz), (cx * sy * sz) - (sx * cz)), 1).view(-1, 1, 3)  # batch*1*3
+    row3 = torch.cat((-sy, sx * cy, cx * cy), 1).view(-1, 1, 3)  # batch*1*3
 
     matrix = torch.cat((row1, row2, row3), 1)  # batch*3*3
 

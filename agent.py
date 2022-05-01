@@ -110,6 +110,9 @@ class SSLAgent:
         self.net.train()
         self.ema_net.train()
 
+        stage2_iter = self.clock.iteration - self.config.stage1_iteration
+        self.update_ema_variables(self.config.is_ema, self.config.ema_decay, stage2_iter)
+
         fisher_dict, fisher_dict_unsuper = self.forward(data, ulb_data)
 
         SSL_lambda = self.config.SSL_lambda
@@ -120,8 +123,6 @@ class SSLAgent:
         loss_all.backward()
         self.optimizer.step()
 
-        stage2_iter = self.clock.iteration - self.config.stage1_iteration
-        self.update_ema_variables(self.config.is_ema, self.config.ema_decay, stage2_iter)
 
         out_dict = dict(
             SSL_lambda=SSL_lambda,
